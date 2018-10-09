@@ -1,4 +1,4 @@
-#[derive(Debug,PartialEq)]
+#[derive(Debug,PartialEq, Clone, Copy)]
 pub enum OpCode {
   LOAD, // 0
   ADD, // 1
@@ -23,24 +23,24 @@ pub enum OpCode {
 impl From<u8> for OpCode {
   fn from(code : u8) -> Self {
     match code {
-      0 => return OpCode::LOAD,
-      1 => return OpCode::ADD,
-      2 => return OpCode::SUB,
-      3 => return OpCode::MUL,
-      4 => return OpCode::DIV,
-      5 => return OpCode::HLT,
-      6 => return OpCode::JMP,
-      7 => return OpCode::JMPF,
-      8 => return OpCode::JMPB,
-      9 => return OpCode::EQ,
-      10 => return OpCode::NEQ,
-      11 => return OpCode::GT,
-      12 => return OpCode::LT,
-      13 => return OpCode::GTE,
-      14 => return OpCode::LTE,
-      15 => return OpCode::JEQ,
-      16 => return OpCode::JNEQ,
-      _ => return OpCode::IGL
+      0 => OpCode::LOAD,
+      1 => OpCode::ADD,
+      2 => OpCode::SUB,
+      3 => OpCode::MUL,
+      4 => OpCode::DIV,
+      5 => OpCode::HLT,
+      6 => OpCode::JMP,
+      7 => OpCode::JMPF,
+      8 => OpCode::JMPB,
+      9 => OpCode::EQ,
+      10 => OpCode::NEQ,
+      11 => OpCode::GT,
+      12 => OpCode::LT,
+      13 => OpCode::GTE,
+      14 => OpCode::LTE,
+      15 => OpCode::JEQ,
+      16 => OpCode::JNEQ,
+      _ => OpCode::IGL
     }
   }
 }
@@ -52,20 +52,22 @@ pub struct Instruction {
 impl Instruction {
   pub fn new(opcode: OpCode) -> Instruction {
     Instruction {
-      opcode: opcode
+      opcode
     }
   }
 }
 
-#[cfg(tests)]
+#[cfg(test)]
 mod tests {
   use super::*;
 
+  #[test]
   fn test_create_hlt() {
     let instruction = Instruction::new(OpCode::HLT);
     assert_eq!(OpCode::HLT, instruction.opcode);
   }
 
+  #[test]
   fn test_create_ilg() {
     let instruction = Instruction::new(OpCode::IGL);
     assert_eq!(OpCode::IGL, instruction.opcode);

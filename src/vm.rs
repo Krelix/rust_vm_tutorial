@@ -1,9 +1,10 @@
 use instruction::OpCode;
 
+#[derive(Debug,Default)]
 pub struct VM {
-  registers: [i32; 32],
+  pub registers: [i32; 32],
   pc: usize,
-  program: Vec<u8>,
+  pub program: Vec<u8>,
   remainder: u32,
   equal_flag: bool
 }
@@ -28,6 +29,10 @@ impl VM {
 
   pub fn run_once(&mut self) {
     self.execute_instruction();
+  }
+
+  pub fn add_byte(&mut self, byte : u8) {
+    self.program.push(byte);
   }
 
   fn execute_instruction(&mut self) -> bool {
@@ -140,19 +145,21 @@ impl VM {
         return false;
       }
     }
-    return true;
+    true
   }
 
   fn decode_opcode(&mut self) -> OpCode {
     let opcode = OpCode::from(self.program[self.pc]);
     self.pc += 1;
-    return opcode;
+    
+    opcode
   }
 
   fn next_8_bits(&mut self) -> u8 {
     let result = self.program[self.pc];
     self.pc += 1;
-    return result;
+
+    result
   }
 
   fn next_16_bits(&mut self) -> u16 {
@@ -162,7 +169,8 @@ impl VM {
     let result = ((self.program[self.pc] as u16) << 8) | (self.program[self.pc + 1]) as u16;
     // move the counter twice
     self.pc += 2;
-    return result;
+
+    result
   }
 }
 
@@ -171,7 +179,7 @@ mod tests {
   use super::*;
 
   fn get_vm() -> VM {
-    return VM::new();
+    VM::new()
   }
 
   #[test]
