@@ -6,6 +6,7 @@ use std::num::ParseIntError;
 use vm::VM;
 use assembler::program_parsers::program;
 
+#[derive(Default)]
 pub struct REPL {
     command_buffer: Vec<String>,
     vm: VM,

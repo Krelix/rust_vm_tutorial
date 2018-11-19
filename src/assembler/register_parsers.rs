@@ -1,6 +1,5 @@
-
-use nom::types::CompleteStr;
 use nom::digit;
+use nom::types::CompleteStr;
 
 use assembler::Token;
 
@@ -26,18 +25,17 @@ mod tests {
   fn test_register_nok() {
     let result = register(CompleteStr("20"));
     assert!(!result.is_ok());
-
     let result = register(CompleteStr("$a"));
     assert!(!result.is_ok());
   }
-  
+
   #[test]
   fn test_register_ok() {
     let result = register(CompleteStr("$20"));
     assert!(result.is_ok());
     let (rest, token) = result.unwrap();
     assert_eq!(CompleteStr(""), rest);
-    assert_eq!(Token::Register{reg_num: 20}, token);
+    assert_eq!(Token::Register { reg_num: 20 }, token);
   }
-  
+
 }

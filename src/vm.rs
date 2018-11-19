@@ -5,6 +5,7 @@ pub struct VM {
   pub registers: [i32; 32],
   pc: usize,
   pub program: Vec<u8>,
+  heap: Vec<u8>,
   remainder: u32,
   equal_flag: bool
 }
@@ -15,6 +16,7 @@ impl VM {
       registers: [0; 32],
       pc: 0,
       program: vec![],
+      heap: vec![],
       remainder: 0,
       equal_flag: false
     }
@@ -39,7 +41,7 @@ impl VM {
     if self.pc >= self.program.len() {
       // program counter above program length, we're done
       println!("Counter above program length, terminating");
-      return false;
+      return true;
     }
 
     match self.decode_opcode() {
@@ -78,7 +80,7 @@ impl VM {
       },
       OpCode::HLT => {
         println!("HLT encountered");
-        return false;
+        return true;
       },
       OpCode::JMP => {
         let target = self.registers[self.next_8_bits() as usize];
@@ -140,12 +142,26 @@ impl VM {
           self.pc = target as usize;
         }
       },
+      OpCode::ALOC => {
+        let register = self.next_8_bits() as usize;
+        let bytes = self.registers[register];
+        let new_end = self.heap.len() as i32 + bytes;
+        self.heap.resize(new_end as usize, 0);
+      },
+      OpCode::INC => {
+        let register = self.next_8_bits() as usize;
+        self.registers[register] += 1;
+      },
+      OpCode::DEC => {
+        let register = self.next_8_bits() as usize;
+        self.registers[register] -= 1;
+      },
       _ => {
         println!("Unrecognized opcode. Terminating.");
-        return false;
+        return true;
       }
     }
-    true
+    false
   }
 
   fn decode_opcode(&mut self) -> OpCode {
@@ -404,5 +420,38 @@ mod tests {
     test_vm.program = test_code;
     test_vm.run_once();
     assert_eq!(10, test_vm.pc);
+  }
+
+  #[test]
+  fn test_aloc_opcode() {
+      let mut test_vm = get_vm();
+      // initialize heap to 512 length
+      test_vm.heap.resize(512, 0);
+      test_vm.registers[0] = 512;
+      // opcode, register with additional size, NA, NA
+      let test_code = vec![OpCode::ALOC as u8, 0, 0, 0];
+      test_vm.program = test_code;
+      test_vm.run_once();
+      assert_eq!(1024, test_vm.heap.len());
+  }
+
+  #[test]
+  fn test_inc_opcode() {
+      let mut test_vm = get_vm();
+      test_vm.registers[0] = 10;
+      let test_code = vec![OpCode::INC as u8, 0, 0, 0];
+      test_vm.program = test_code;
+      test_vm.run_once();
+      assert_eq!(11, test_vm.registers[0]);
+  }
+
+  #[test]
+  fn test_dec_opcode() {
+      let mut test_vm = get_vm();
+      test_vm.registers[0] = 10;
+      let test_code = vec![OpCode::DEC as u8, 0, 0, 0];
+      test_vm.program = test_code;
+      test_vm.run_once();
+      assert_eq!(9, test_vm.registers[0]);
   }
 }

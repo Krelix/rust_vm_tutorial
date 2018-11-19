@@ -1,5 +1,5 @@
 use nom::types::CompleteStr;
-use assembler::instruction_parser::*;
+use assembler::instruction_parsers::*;
 
 #[derive(Debug, PartialEq)]
 pub struct Program{
@@ -16,13 +16,13 @@ impl Program{
   }
 }
 
-named!{pub program<CompleteStr, Program>,
+named!(pub program<CompleteStr, Program>,
   do_parse!(
     instructions: many1!(instruction) >> (
       Program{instructions}
     )
   )
-}
+);
 
 #[cfg(test)]
 mod tests {

@@ -1,19 +1,24 @@
 use assembler::Token;
+use assembler::register_parsers::register;
 use nom::digit;
 use nom::types::CompleteStr;
 
-// FIXME: negative integers ?
-named!{pub int_operand<CompleteStr,Token>,
+named!(pub int_operand<CompleteStr,Token>,
   ws!(
     do_parse!(
       tag!("#") >>
-
       operand: digit >> (
         Token::IntegerOperand{ value : operand.parse::<i32>().unwrap()}
       )
     )
   )
-}
+);
+
+named!(pub operand<CompleteStr, Token>,
+  alt!(
+    int_operand | register
+  )
+);
 
 #[cfg(test)]
 mod tests {
